@@ -7,13 +7,13 @@ abstract class Activity {
     private Date date;
     private double duration, distance, averageHeartRate;
 
-    private String[] statuses = {"Very Light", "Light", "Moderate", "Vigorous", "Very Vigorous"};
+    private String[] statuses = {"Extremely Light", "Very Light", "Light", "Moderate", "Vigorous", "Very Vigorous"};
 
     public String[] getStatuses() {
         return statuses;
     }
 
-    public Activity(String activityType, Date date, double duration, double distance, double averageHeartRate) {
+    public Activity(Date date, double duration, double distance, double averageHeartRate) {
         this.date = date;
         this.duration = duration;
         this.distance = distance;
