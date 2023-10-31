@@ -19,19 +19,25 @@ public class Swimming extends Activity{
         else if(super.getKPH() < kphMileStones[0])
             status = super.getStatuses()[1];
 
+        if(super.getKPH() < 0)
+            status = "Invalid";
+
         super.setKphStatus(status);
     }
     public void calculateIntensityStatus(){// 0    1     2   3    4
         double[] distanceMileStones = {5, 6.3, 7.6, 8.9, 10.2};
         String status = super.getStatuses()[0];
-        if(super.getKPH() < distanceMileStones[3])
+        if(super.getDistance() < distanceMileStones[3])
             status = super.getStatuses()[4];
-        else if(super.getKPH() < distanceMileStones[2])
+        else if(super.getDistance() < distanceMileStones[2])
             status = super.getStatuses()[3];
-        else if(super.getKPH() < distanceMileStones[1])
+        else if(super.getDistance() < distanceMileStones[1])
             status = super.getStatuses()[2];
-        else if(super.getKPH() < distanceMileStones[0])
+        else if(super.getDistance() < distanceMileStones[0])
             status = super.getStatuses()[1];
+
+        if(super.getDistance() < 0)
+            status = "Invalid";
 
         super.setIntensityStatus(status);
     }
