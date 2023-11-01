@@ -2,17 +2,23 @@ package org.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat; // date related code referenced from https://www.edureka.co/blog/date-format-in-java/ on the 1st of the 11th 2023 at 5:53pm
+import java.util.*;
 
 public class main {
 
 
+    public static void main(String[] args) {
+        System.out.println(ActivityReader("testData/activity_data_10.csv").toString());
+    }
 
 
-    public ArrayList<Activity> ActivityReader(String fileName) {
+
+    public static ArrayList<Activity> ActivityReader(String fileName)  {
 
         ArrayList<Activity> allActivities = new ArrayList<Activity>();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         try (Scanner sc = new Scanner(new File(fileName)))
         {
@@ -25,10 +31,25 @@ public class main {
                 String line = sc.nextLine();             // read full line ( delimited by a "\n" )
                 String [] tokens = line.split(",");  // split line using a comma as the delimiter (separator)
 
-                String name = tokens[0];  // extract first token/field from the tokens array (i.e. the name)
-                int age = Integer.parseInt(tokens[1]);  // e.g. Convert String "19" to int value 19
-                double height = Double.parseDouble(tokens[2]);  // e.g. Convert String "1.82" to double 1.82
-                double gpa = Double.parseDouble(tokens[3]);
+                String type = tokens[0];
+                Date date = null;
+                try {
+                    date = dateFormat.parse(tokens[1]);
+                }
+                catch (ParseException e){
+                    System.out.println("DATE NOT WORKY!!!!! :O");
+                }
+                double duration = Double.parseDouble(tokens[2]);
+                double distance = Double.parseDouble(tokens[3]);
+                double avgHeartRate = Double.parseDouble(tokens[4]);
+
+
+                if(type.equals("Running"))
+                    allActivities.add(new Running(date, duration, distance, avgHeartRate));
+                else if(type.equals("Swimmimg"))
+                    allActivities.add(new Swimming(date, duration, distance, avgHeartRate));
+                else if(type.equals("Cycling"))
+                    allActivities.add(new Cycling(date, duration, distance, avgHeartRate));
             }
 
         } catch (FileNotFoundException exception)
