@@ -65,7 +65,10 @@ abstract class Activity {
 
 
     public double getKPH(){
-        return (this.distance / this.duration) * 60;
+        if(this.duration > 0)
+            return (this.distance / this.duration) * 60;
+        else
+            return 0;
     }
 
     public void setIntensityStatus(String intensityStatus) {
