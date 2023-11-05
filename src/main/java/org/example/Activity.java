@@ -3,9 +3,11 @@ package org.example;
 import java.util.*;
 
 abstract class Activity implements Comparable<Activity> {
-    private String intensityStatus = "Very Light", kphStatus = "Very Light";
+    private String intensityStatus = "Very Light";
     private Date date;
     private double duration, distance, averageHeartRate;
+
+    private double intensity = 0, caloriesBurned = 0;
 
     private String[] statuses = {"Extremely Light", "Very Light", "Light", "Moderate", "Vigorous", "Very Vigorous"};
 
@@ -56,12 +58,11 @@ abstract class Activity implements Comparable<Activity> {
         return intensityStatus;
     }
 
-    public String getKphStatus() {
-        return kphStatus;
+    public double getCaloriesBurned() {
+        return this.intensity*this.duration;
     }
 
-    abstract void calculateIntensityStatus();
-    abstract void               calculateKPHStatus();
+    abstract void calculateIntensityValue();
 
     public double getKPH(){
         if(this.duration > 0)
@@ -74,9 +75,6 @@ abstract class Activity implements Comparable<Activity> {
         this.intensityStatus = intensityStatus;
     }
 
-    public void setKphStatus(String kphStatus) {
-        this.kphStatus = kphStatus;
-    }
 
     @Override
     public int compareTo(Activity o){ //natural sort by date
@@ -89,15 +87,24 @@ abstract class Activity implements Comparable<Activity> {
         return this.duration == o.getDuration() && this.date == o.getDate() && this.averageHeartRate == o.getAverageHeartRate() && this.distance == o.getDistance();
     }
 
+    public double getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(double intensity) {
+        this.intensity = intensity;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
                 "intensityStatus='" + intensityStatus + '\'' +
-                ", kphStatus='" + kphStatus + '\'' +
                 ", date=" + date +
                 ", duration=" + duration +
                 ", distance=" + distance +
                 ", averageHeartRate=" + averageHeartRate +
+                ", intensity=" + intensity +
+                ", caloriesBurned=" + caloriesBurned +
                 '}';
     }
 }
