@@ -10,7 +10,12 @@ public class main {
 
 
     public static void main(String[] args) {
-        System.out.println(ActivityReader("testData/activity_data_10.csv").toString());
+        ArrayList<Activity> allActivities = ActivityReader("testData/activity_data_10.csv");
+        System.out.println(allActivities.toString());
+
+        Collections.sort(allActivities);
+
+        System.out.println(allActivities.toString());
     }
 
 

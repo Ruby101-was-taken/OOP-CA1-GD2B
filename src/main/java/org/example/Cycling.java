@@ -5,6 +5,8 @@ import java.util.Date;
 public class Cycling extends Activity{
     public Cycling(Date date, double duration, double distance, double averageHeartRate) {
         super(date, duration, distance, averageHeartRate);
+        this.calculateKPHStatus();
+        this.calculateIntensityStatus();
     }
 
     public void calculateKPHStatus(){// 0    1     2   3    4

@@ -1,8 +1,8 @@
 package org.example;
 
-import java.util.Date;
+import java.util.*;
 
-abstract class Activity {
+abstract class Activity implements Comparable<Activity> {
     private String intensityStatus = "Very Light", kphStatus = "Very Light";
     private Date date;
     private double duration, distance, averageHeartRate;
@@ -61,8 +61,7 @@ abstract class Activity {
     }
 
     abstract void calculateIntensityStatus();
-    abstract void calculateKPHStatus();
-
+    abstract void               calculateKPHStatus();
 
     public double getKPH(){
         if(this.duration > 0)
@@ -77,6 +76,17 @@ abstract class Activity {
 
     public void setKphStatus(String kphStatus) {
         this.kphStatus = kphStatus;
+    }
+
+    @Override
+    public int compareTo(Activity o){ //natural sort by date
+        if (this == null && o == null) return 0;
+        if (o == null) return 1;
+        return this.date.compareTo(o.getDate());
+    }
+
+    public boolean equals(Activity o) {
+        return this.duration == o.getDuration() && this.date == o.getDate() && this.averageHeartRate == o.getAverageHeartRate() && this.distance == o.getDistance();
     }
 
     @Override
