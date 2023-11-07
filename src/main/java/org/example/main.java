@@ -37,7 +37,7 @@ public class main {
 
         Settings settings = new Settings();
 
-        printActivity(activities);
+        printActivity(activities, settings.sortType);
 
         while (runProgram) {
             if(mainMenu){
@@ -197,8 +197,7 @@ public class main {
             String className = activity.getClass().getName();
             String [] classInfo = className.split("\\.");
             className = classInfo[classInfo.length-1];
-
-            if(className == type){
+            if(className.equals(type)){
                 System.out.println(className + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "km at " + activity.getKPH() + "km/h.\nLasted " + activity.getDuration() + " minutes.\nThe average heart rate was " + activity.getAverageHeartRate() + " bpm.\n" + activity.getCaloriesBurned() + " calories were burned.\nActivity on the " + activity.getDateString() + ".\n=====");
             }
         }
