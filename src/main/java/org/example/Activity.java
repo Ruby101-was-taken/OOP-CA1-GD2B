@@ -71,6 +71,10 @@ abstract class Activity implements Comparable<Activity> {
             return 0;
     }
 
+    public String getDateString(){
+        return date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+    }
+
     public void setIntensityStatus(String intensityStatus) {
         this.intensityStatus = intensityStatus;
     }
@@ -86,6 +90,8 @@ abstract class Activity implements Comparable<Activity> {
     public boolean equals(Activity o) {
         return this.duration == o.getDuration() && this.date == o.getDate() && this.averageHeartRate == o.getAverageHeartRate() && this.distance == o.getDistance();
     }
+
+
 
     public double getIntensity() {
         return intensity;

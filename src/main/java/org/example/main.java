@@ -22,21 +22,32 @@ public class main {
 
         boolean runProgram = true;
 
-        boolean mainMenu = true, viewMenu = false, settingsMenu = false;
+        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false;
         String[] mainMenuOptions = {"View Activity", "Change File", "Settings"};
         String[] mainMenuOptionsDesc = {"View your saved activity history and related details", "Switch which file you're using", "Change how the program functions"};
-        String[] settingsMenuOptions = {"Toggle Descriptions", "Toggle Settings Path"};
-        String[] settingsMenuOptionsDesc = {"Toggle whether to show these messages", "Toggle whether to show menu path at the top"};
+        String[] viewMenuOptions = {"View Based on Type", "View All"};
+        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities"};
+        String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Change Activity"};
+        String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Swaps to the next Activity"};
+        String[] settingsMenuOptions = {"Toggle Descriptions", "Toggle Settings Path", "Change Activity"};
+        String[] settingsMenuOptionsDesc = {"Toggle whether to show these messages", "Toggle whether to show menu path at the top", "Swaps to the next Activity"};
 
         ArrayList<String> path = new ArrayList<String>();
         path.add("Main Menu");
 
         Settings settings = new Settings();
 
+        printActivity(activities);
+
         while (runProgram) {
             if(mainMenu){
                 printTitle(path, settings);
                 switch(printMenu(mainMenuOptions, mainMenuOptionsDesc, settings)){
+                    case 1:
+                        viewMenu = true;
+                        mainMenu = false;
+                        path.add("View Activity");
+                        break;
                     case 2:
                         activities = selectFile();
                         break;
@@ -51,14 +62,50 @@ public class main {
                         break;
                 }
             }
-            else if(settingsMenu){
+            else if(viewMenu){
                 printTitle(path, settings);
-                switch(printMenu(settingsMenuOptions, settingsMenuOptionsDesc, settings)){
+                switch(printMenu(viewMenuOptions, viewMenuOptionsDesc, settings)){
+                    case 1:
+                        viewMenu = false;
+                        viewTypes = true;
+                        path.add("View Based On Type");
+                        break;
+                    case 2:
+                        path.add("View All");
+                        break;
+                    case 0:
+                        mainMenu = true;
+                        viewMenu = false;
+                        path.remove("View Activity");
+                        break;
+                }
+            }
+            else if (viewTypes) {
+                printTitle(path, settings);
+                System.out.println("Sorting " + settings.sortType + " Activities.");
+                switch(printMenu(viewTypesMenuOptions, viewTypesMenuOptionsDesc, settings)) {
+                    case 6:
+                        settings.swapSortType();
+                        break;
+                    case 0:
+                        viewTypes = false;
+                        viewMenu = true;
+                        path.remove("View Based On Type");
+                        break;
+                }
+            }
+            else if (settingsMenu) {
+                printTitle(path, settings);
+                System.out.println("Sorting " + settings.sortType + " Activities.");
+                switch (printMenu(settingsMenuOptions, settingsMenuOptionsDesc, settings)) {
                     case 1:
                         settings.toggleDescription();
                         break;
                     case 2:
                         settings.togglePath();
+                        break;
+                    case 3:
+                        settings.swapSortType();
                         break;
                     case 0:
                         mainMenu = true;
@@ -66,12 +113,12 @@ public class main {
                         path.remove("Settings");
                         break;
                 }
-            }
-            else{
-                switch(intInput("Would you like to quit? (0:Yes, 1:No)")) {
+            } else {
+                switch (intInput("Would you like to quit? (0:Yes, 1:No)")) {
                     case 0:
                         runProgram = false;
                         break;
+
                     default:
                         mainMenu = true;
                         path.add("Main Menu");
@@ -144,6 +191,18 @@ public class main {
     }
 
 
+    public static void printActivity(ArrayList<Activity> activities, String type){
+        System.out.println("=====");
+        for(Activity activity : activities){
+            String className = activity.getClass().getName();
+            String [] classInfo = className.split("\\.");
+            className = classInfo[classInfo.length-1];
+
+            if(className == type){
+                System.out.println(className + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "km at " + activity.getKPH() + "km/h.\nLasted " + activity.getDuration() + " minutes.\nThe average heart rate was " + activity.getAverageHeartRate() + " bpm.\n" + activity.getCaloriesBurned() + " calories were burned.\nActivity on the " + activity.getDateString() + ".\n=====");
+            }
+        }
+    }
 
 
 
@@ -188,6 +247,8 @@ public class main {
         {
             System.out.println("FileNotFoundException caught. The file " +fileName+ " may not exist." + exception);
         }
+
+
 
         return allActivities;
     }
