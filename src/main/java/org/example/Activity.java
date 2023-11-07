@@ -62,8 +62,6 @@ abstract class Activity implements Comparable<Activity> {
         return this.intensity*this.duration;
     }
 
-    abstract void calculateIntensityValue();
-
     public double getKPH(){
         if(this.duration > 0)
             return (this.distance / this.duration) * 60;
@@ -72,7 +70,7 @@ abstract class Activity implements Comparable<Activity> {
     }
 
     public String getDateString(){
-        return date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+        return date.getDate() + "/" + (date.getMonth()+1) + "/" + (date.getYear()+1900);
     }
 
     public void setIntensityStatus(String intensityStatus) {
@@ -89,6 +87,36 @@ abstract class Activity implements Comparable<Activity> {
 
     public boolean equals(Activity o) {
         return this.duration == o.getDuration() && this.date == o.getDate() && this.averageHeartRate == o.getAverageHeartRate() && this.distance == o.getDistance();
+    }
+
+
+    public void calculateIntensityValue(double[] kphMileStones, double[] intensityValues){// 0    1     2   3    4
+        String status = this.statuses[0];
+        double KPH = getKPH();
+        if(KPH >= kphMileStones[4]) {
+            status = getStatuses()[5];
+            setIntensity(intensityValues[4]);
+        }
+        else if(KPH >= kphMileStones[3]) {
+            status = getStatuses()[4];
+            setIntensity(intensityValues[3]);
+        }
+        else if(KPH >= kphMileStones[2]) {
+            status = getStatuses()[3];
+            setIntensity(intensityValues[2]);
+        }
+        else if(KPH >= kphMileStones[1]) {
+            status = getStatuses()[2];
+            setIntensity(intensityValues[1]);
+        }
+        else if(KPH >= kphMileStones[0]) {
+            status = getStatuses()[1];
+            setIntensity(intensityValues[0]);
+        }
+        else if(KPH <= 0)
+            status = "Invalid";
+
+        setIntensityStatus(status);
     }
 
 
