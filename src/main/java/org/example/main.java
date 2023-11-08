@@ -62,27 +62,26 @@ public class main {
         CustomViewSettings cvSettings = new CustomViewSettings();
 
         while (runProgram) {
-            if(path.size() > 0) // don't print title if there is no menu open cuz it crashes cuz the path doesn't exist etc etc blah blah blah
+            if (path.size() > 0) // don't print title if there is no menu open cuz it crashes cuz the path doesn't exist etc etc blah blah blah
                 printTitle(path, settings);
-            if (printActivitiesNextLoop){
-                if(printType)
+            if (printActivitiesNextLoop) {
+                if (printType)
                     printActivity(activities, settings.sortType, settings);
-                else if(customView!=null) {
+                else if (customView != null) {
                     printActivity(customView, settings);
-                }
-                else
+                } else
                     printActivity(activities, settings);
                 printActivitiesNextLoop = false;
                 printType = true;
             }
 
-            if(printStats){
+            if (printStats) {
                 printStats = false;
                 System.out.println("All:\nAverage Calories Burned: " + getAvgCalories(activities) + " Average Distance: " + getAvgDistance(activities) + "\nRunning:\nAverage Calories Burned: " + getAvgCalories(activities, "Running") + " Average Distance: " + getAvgDistance(activities, "Running") + "\nSwimming:\nAverage Calories Burned: " + getAvgCalories(activities, "Swimming") + " Average Distance: " + getAvgDistance(activities, "Swimming") + "\nCycling:\nAverage Calories Burned: " + getAvgCalories(activities, "Cycling") + " Average Distance: " + getAvgDistance(activities, "Cycling"));
             }
 
-            if(mainMenu){
-                switch(printMenu(mainMenuOptions, mainMenuOptionsDesc, settings)){
+            if (mainMenu) {
+                switch (printMenu(mainMenuOptions, mainMenuOptionsDesc, settings)) {
                     case 1:
                         viewMenu = true;
                         mainMenu = false;
@@ -109,9 +108,8 @@ public class main {
                         path.remove("Main Menu");
                         break;
                 }
-            }
-            else if(viewMenu){
-                switch(printMenu(viewMenuOptions, viewMenuOptionsDesc, settings)){
+            } else if (viewMenu) {
+                switch (printMenu(viewMenuOptions, viewMenuOptionsDesc, settings)) {
                     case 1:
                         viewMenu = false;
                         viewTypes = true;
@@ -141,10 +139,9 @@ public class main {
                         path.remove("View Activity");
                         break;
                 }
-            }
-            else if (viewTypes) {
+            } else if (viewTypes) {
                 System.out.println("Sorting " + settings.sortType + " Activities.");
-                switch(printMenu(viewTypesMenuOptions, viewTypesMenuOptionsDesc, settings)) {
+                switch (printMenu(viewTypesMenuOptions, viewTypesMenuOptionsDesc, settings)) {
                     case 1: //date
                         Collections.sort(activities);
                         printActivitiesNextLoop = ascOrDesc(activities, settings);
@@ -176,10 +173,9 @@ public class main {
                         path.remove("View Based On Type");
                         break;
                 }
-            }
-            else if (viewAll) {
+            } else if (viewAll) {
                 System.out.println("Sorting " + settings.sortType + " Activities.");
-                switch(printMenu(viewAllMenuOptions, viewAllMenuOptionsDesc, settings)) {
+                switch (printMenu(viewAllMenuOptions, viewAllMenuOptionsDesc, settings)) {
                     case 1: //date
                         Collections.sort(activities);
                         printActivitiesNextLoop = ascOrDesc(activities, settings);
@@ -209,17 +205,16 @@ public class main {
                         path.remove("View All");
                         break;
                 }
-                if(printActivitiesNextLoop)
+                if (printActivitiesNextLoop)
                     printType = false;
-            }
-            else if(viewCustom) {
+            } else if (viewCustom) {
 
                 String[] sortByMenu = {"Sort By Date", "Sort By Calories", "Sort By Distance", "Sort By Duration", "Sort By Heart Rate"};
                 String[] sortByMenuDesc = {"Sort the list by date", "Sort the list by calories", "Sort the list by distance", "Sort the list by duration", "Sort the list by heart rate"};
                 System.out.println(cvSettings);
-                switch (printMenu(viewCustomOptions, viewCustomOptionsDesc, settings)){
+                switch (printMenu(viewCustomOptions, viewCustomOptionsDesc, settings)) {
                     case 1:
-                        switch (printMenu(sortByMenu, sortByMenuDesc, settings)){
+                        switch (printMenu(sortByMenu, sortByMenuDesc, settings)) {
                             case 1:
                                 cvSettings.sortType = CustomViewSettings.SortType.Date;
                                 break;
@@ -250,7 +245,7 @@ public class main {
                         cvSettings.minimumCalories = intInput("What should the minimum calories be?");
                         break;
                     case 6:
-                        switch (intInput("Toggle Activties to Show. Type the number of the Activity to toggle it.\n[1] Running\n[2] Swimming\n[3] Cycling\n")){
+                        switch (intInput("Toggle Activties to Show. Type the number of the Activity to toggle it.\n[1] Running\n[2] Swimming\n[3] Cycling\n")) {
                             case 1:
                                 cvSettings.toggle("Running");
                                 break;
@@ -264,14 +259,14 @@ public class main {
                         break;
                     case 7:
                         customView = new ArrayList<Activity>();
-                        for(Activity activity : activities){
-                            if(cvSettings.activities.indexOf(getClassName(activity)) != -1){
-                                if(activity.getDuration() >= cvSettings.minimumDuration && activity.getDistance() >= cvSettings.minimumDistance && activity.getAverageHeartRate() >= cvSettings.minimumHearRate && activity.getCaloriesBurned() >= cvSettings.minimumCalories){
+                        for (Activity activity : activities) {
+                            if (cvSettings.activities.contains(getClassName(activity))) {
+                                if (activity.getDuration() >= cvSettings.minimumDuration && activity.getDistance() >= cvSettings.minimumDistance && activity.getAverageHeartRate() >= cvSettings.minimumHearRate && activity.getCaloriesBurned() >= cvSettings.minimumCalories) {
                                     customView.add(activity);
                                 }
                             }
                         }
-                        switch (cvSettings.sortType){
+                        switch (cvSettings.sortType) {
                             case Date:
                                 Collections.sort(customView);
                                 break;
@@ -298,13 +293,12 @@ public class main {
                         viewMenu = true;
                         path.remove("Custom View");
                 }
-            }
-            else if(viewDate) { //i think I hate this code
-                System.out.println(""); //just need a line break here :3
+            } else if (viewDate) { //i think I hate this code
+                System.out.println(); //just need a line break here :3
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 boolean canContinue = true;
                 int date = -1, month = 0, year;
-                if (singleActivityToPrint != null){
+                if (singleActivityToPrint != null) {
                     System.out.println("Note: Only one Activity can be shown from a day.\n====="); //this is something I would fix if I had more time, but I just included it cuz I wanted to use binary search
                     if (settings.simpleActivity)
                         System.out.println(getSimpleView(singleActivityToPrint));
@@ -315,15 +309,15 @@ public class main {
 
                 Comparator<Activity> activityDateComparator =
                         (a1, a2) -> a1.getDate().compareTo(a2.getDate());
-                while(date < 0 || date > 31){
+                while (date < 0 || date > 31) {
                     date = intInput("[DD/mm/yyyy]Enter the date (or enter 0 to go back)");
-                    if(date < 0 || date > 31)
+                    if (date < 0 || date > 31)
                         System.out.println("Please enter a valid date.");
                 }
-                if (date!=0){
-                    while(month < 1 || month > 12) {
+                if (date != 0) {
+                    while (month < 1 || month > 12) {
                         month = intInput("[" + date + "/MM/yyyy]Enter the month (As a number)");
-                        if(month < 1 || month > 12)
+                        if (month < 1 || month > 12)
                             System.out.println("Please enter a valid month.");
                     }
                     year = intInput("[" + date + "/" + month + "/YYYY]Enter the year");
@@ -333,21 +327,18 @@ public class main {
                         Activity key = new Running(fullDate);
                         Collections.sort(activities);
                         int index = Collections.binarySearch(activities, key, activityDateComparator);
-                        if(index >= 0){
-                           singleActivityToPrint = activities.get(index);
+                        if (index >= 0) {
+                            singleActivityToPrint = activities.get(index);
                         }
-                    }
-                    catch (ParseException e){
+                    } catch (ParseException e) {
                         System.out.println("Something went wrong, check you inputted the date correctly and try again...");
                     }
-                }
-                else{
+                } else {
                     viewDate = false;
                     viewMenu = true;
                     path.remove("View Based on Date");
                 }
-            }
-            else if (settingsMenu) {
+            } else if (settingsMenu) {
                 System.out.println("Sorting " + settings.sortType + " Activities.");
                 switch (printMenu(settingsMenuOptions, settingsMenuOptionsDesc, settings)) {
                     case 1:
@@ -385,15 +376,15 @@ public class main {
         System.out.println("Activity Tracker Closed....");
     }
 
-    public static String createDateString(int date, int month, int year){
+    public static String createDateString(int date, int month, int year) {
         String returnString = "";
-        if(date < 10)
+        if (date < 10)
             returnString += "0";
         returnString += date + "/";
-        if(month<10)
+        if (month < 10)
             returnString += "0";
         returnString += month + "/" + year;
-        return  returnString;
+        return returnString;
     }
 
     public static ArrayList<Activity> selectFile() {
@@ -401,7 +392,7 @@ public class main {
         //Creating a File object for directory
         File directoryPath = new File("data");
         //List of all files and directories
-        String contents[] = directoryPath.list();
+        String[] contents = directoryPath.list();
         System.out.println("Available Data:");
         for (int i = 0; i < contents.length; i++) {
             System.out.println("[" + i + "]: " + contents[i]);
@@ -435,7 +426,7 @@ public class main {
                 "|  _  /   \\_  |  |   |  | |  :  | |  |   |  |  |___, |      |  |  |    \\ |  _  /   \\_ |     \\|   [_ |    \\ \n" +
                 "|  |  \\     | |  |   |  |  \\   /  |  |   |  |  |     |      |  |  |  .  \\|  |  \\     ||  .  ||     ||  .  \\\n" +
                 "|__|__|\\____| |__|  |____|  \\_/  |____|  |__|  |____/       |__|  |__|\\_||__|__|\\____||__|\\_||_____||__|\\_|\n");
-        if(settings.showPaths) {
+        if (settings.showPaths) {
             String pathString = "";
             for (String s : path) {
                 pathString += s + ">";
@@ -445,11 +436,11 @@ public class main {
         }
     }
 
-    public static int printMenu(String[] menu, String[] desc, Settings settings){
+    public static int printMenu(String[] menu, String[] desc, Settings settings) {
         System.out.println("\nEnter the number beside the option, or type \"0\" to go back.");
-        for(int i=0; i<menu.length; i++){
-            System.out.print("[" + (i+1) + "]: " + menu[i]);
-            if(settings.showDescriptions)
+        for (int i = 0; i < menu.length; i++) {
+            System.out.print("[" + (i + 1) + "]: " + menu[i]);
+            if (settings.showDescriptions)
                 System.out.print(" (" + desc[i] + ".)");
             System.out.println();
         }
@@ -457,50 +448,52 @@ public class main {
     }
 
 
-    public static void printActivity(ArrayList<Activity> activities, String type, Settings settings){
+    public static void printActivity(ArrayList<Activity> activities, String type, Settings settings) {
         System.out.println("=====");
-        for(Activity activity : activities){
+        for (Activity activity : activities) {
             String className = getClassName(activity);
-            if(className.equals(type)){
-                if(!settings.simpleActivity)
+            if (className.equals(type)) {
+                if (!settings.simpleActivity)
                     System.out.println(getComplexView(activity));
                 else
                     System.out.println(getSimpleView(activity));
             }
         }
     }
-    public static void printActivity(ArrayList<Activity> activities, Settings settings){
+
+    public static void printActivity(ArrayList<Activity> activities, Settings settings) {
         System.out.println("=====");
-        for(Activity activity : activities){
-            if(!settings.simpleActivity)
+        for (Activity activity : activities) {
+            if (!settings.simpleActivity)
                 System.out.println(getComplexView(activity));
             else
                 System.out.println(getSimpleView(activity));
         }
     }
 
-    public static String getComplexView(Activity activity){
+    public static String getComplexView(Activity activity) {
         return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "km at " + Math.round(activity.getKPH()) + "km/h.\nLasted " + activity.getDuration() + " minutes.\nThe average heart rate was " + activity.getAverageHeartRate() + " bpm.\n" + activity.getCaloriesBurned() + " calories were burned.\nActivity on the " + activity.getDateString() + ".\n=====";
     }
-    public static String getSimpleView(Activity activity){
+
+    public static String getSimpleView(Activity activity) {
         return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "\nKm/H: " + Math.round(activity.getKPH()) + "\nDuration: " + activity.getDuration() + " minutes.\nAverage heart rate: " + activity.getAverageHeartRate() + " bpm.\nCalories burned: " + activity.getCaloriesBurned() + ".\n" + activity.getDateString() + ".\n=====";
     }
 
-    public static String getClassName(Activity activity){
+    public static String getClassName(Activity activity) {
         String className = activity.getClass().getName();
-        String [] classInfo = className.split("\\.");
-        className = classInfo[classInfo.length-1];
+        String[] classInfo = className.split("\\.");
+        className = classInfo[classInfo.length - 1];
         return className;
     }
 
-    public static boolean ascOrDesc(ArrayList<Activity> activities, Settings settings){
+    public static boolean ascOrDesc(ArrayList<Activity> activities, Settings settings) {
         String askString;
-        if(settings.showDescriptions) {
+        if (settings.showDescriptions) {
             askString = "[1] Ascending (Smallest at the top.)\n[2] Descending (Largest at the top.)\n";
         } else {
             askString = "[1] Ascending\n[2] Descending\n";
         }
-        switch (intInput(askString)){
+        switch (intInput(askString)) {
             case 1:
                 return true; // returns whether or not the list should be printed
             case 2:
@@ -512,8 +505,7 @@ public class main {
     }
 
 
-
-    public static ArrayList<Activity> ActivityReader(String fileName)  {
+    public static ArrayList<Activity> ActivityReader(String fileName) {
 
         ArrayList<Activity> allActivities = new ArrayList<Activity>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -521,23 +513,20 @@ public class main {
         int dupeCount = 0;
 
 
-        try (Scanner sc = new Scanner(new File(fileName)))
-        {
-            if(sc.hasNextLine())
+        try (Scanner sc = new Scanner(new File(fileName))) {
+            if (sc.hasNextLine())
                 sc.nextLine();   // read the header line containing column titles, but don't use it
 
             // read one line at a time into a String, and parse the String into tokens (parts)
-            while (sc.hasNextLine())
-            {
+            while (sc.hasNextLine()) {
                 String line = sc.nextLine();             // read full line ( delimited by a "\n" )
-                String [] tokens = line.split(",");  // split line using a comma as the delimiter (separator)
+                String[] tokens = line.split(",");  // split line using a comma as the delimiter (separator)
 
                 String type = tokens[0];
                 Date date = null;
                 try {
                     date = dateFormat.parse(tokens[1]);
-                }
-                catch (ParseException e){
+                } catch (ParseException e) {
                     System.out.println("DATE NOT WORKY!!!!! :O");
                 }
                 double duration = Double.parseDouble(tokens[2]);
@@ -545,31 +534,30 @@ public class main {
                 double avgHeartRate = Double.parseDouble(tokens[4]);
 
                 Activity placeHolderActivity = new Running();
-                if(type.equals("Running"))
+                if (type.equals("Running"))
                     placeHolderActivity = new Running(date, duration, distance, avgHeartRate);
-                else if(type.equals("Swimming"))
+                else if (type.equals("Swimming"))
                     placeHolderActivity = new Swimming(date, duration, distance, avgHeartRate);
-                else if(type.equals("Cycling"))
+                else if (type.equals("Cycling"))
                     placeHolderActivity = new Cycling(date, duration, distance, avgHeartRate);
 
                 boolean isDuplicate = false;
-                for(Activity activity : allActivities){
-                    if(activity.equals(placeHolderActivity)){
+                for (Activity activity : allActivities) {
+                    if (activity.equals(placeHolderActivity)) {
                         isDuplicate = true;
                         dupeCount++;
                     }
                 }
 
-                if(!isDuplicate)
+                if (!isDuplicate)
                     allActivities.add(placeHolderActivity);
             }
 
-        } catch (FileNotFoundException exception)
-        {
-            System.out.println("FileNotFoundException caught. The file " +fileName+ " may not exist." + exception);
+        } catch (FileNotFoundException exception) {
+            System.out.println("FileNotFoundException caught. The file " + fileName + " may not exist." + exception);
         }
 
-        if(dupeCount > 0) {
+        if (dupeCount > 0) {
             if (dupeCount == 1)
                 System.out.println("A duplicate was found, they have not been loaded...");
             else
@@ -579,38 +567,47 @@ public class main {
         return allActivities;
     }
 
-    public static double getAvgDistance(ArrayList<Activity> activities){
+    public static double getAvgDistance(ArrayList<Activity> activities) {
         DecimalFormat df = new DecimalFormat("#.##");
         double total = 0;
-        for(Activity activity : activities){
-            total+= activity.getDistance();
+        for (Activity activity : activities) {
+            total += activity.getDistance();
         }
-        return Double.parseDouble(df.format(total/activities.size()));
+        return Double.parseDouble(df.format(total / activities.size()));
     }
-    public static double getAvgDistance(ArrayList<Activity> activities, String type){
+
+    public static double getAvgDistance(ArrayList<Activity> activities, String type) {
         DecimalFormat df = new DecimalFormat("#.##");
         double total = 0;
-        for(Activity activity : activities){
-            if(getClassName(activity).equals(type))
-                total+= activity.getDistance();
+        double count = 0;
+        for (Activity activity : activities) {
+            if (getClassName(activity).equals(type)){
+                total += activity.getDistance();
+                count++;
+            }
         }
-        return Double.parseDouble(df.format(total/activities.size()));
+        return Double.parseDouble(df.format(total / count));
     }
-    public static double getAvgCalories(ArrayList<Activity> activities){
+
+    public static double getAvgCalories(ArrayList<Activity> activities) {
         DecimalFormat df = new DecimalFormat("#.##");
         double total = 0;
-        for(Activity activity : activities){
-            total+= activity.getCaloriesBurned();
+        for (Activity activity : activities) {
+            total += activity.getCaloriesBurned();
         }
-        return Double.parseDouble(df.format(total/activities.size()));
+        return Double.parseDouble(df.format(total / activities.size()));
     }
-    public static double getAvgCalories(ArrayList<Activity> activities, String type){
+
+    public static double getAvgCalories(ArrayList<Activity> activities, String type) {
         DecimalFormat df = new DecimalFormat("#.##");
         double total = 0;
-        for(Activity activity : activities){
-            if(getClassName(activity).equals(type))
-                total+= activity.getCaloriesBurned();
+        double count = 0;
+        for (Activity activity : activities) {
+            if (getClassName(activity).equals(type)) {
+                total += activity.getCaloriesBurned();
+                count++;
+            }
         }
-        return Double.parseDouble(df.format(total/activities.size()));
+        return Double.parseDouble(df.format(total / count));
     }
 }
