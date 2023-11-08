@@ -22,13 +22,15 @@ public class main {
 
         boolean runProgram = true;
 
-        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false;
+        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false, viewAll = false;
         String[] mainMenuOptions = {"View Activity", "Quick View", "Change File", "Settings"};
         String[] mainMenuOptionsDesc = {"View your saved Activity history and related details", "View all Activities now", "Switch which file you're using", "Change how the program functions"};
         String[] viewMenuOptions = {"View Based on Type", "View All"};
         String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities"};
         String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Change Activity"};
         String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Swaps to the next Activity"};
+        String[] viewAllMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned"};
+        String[] viewAllMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity"};
         String[] settingsMenuOptions = {"Toggle Descriptions", "Toggle Settings Path", "Change Activity", "Toggle Simplified Activity View"};
         String[] settingsMenuOptionsDesc = {"Toggle whether to show these messages", "Toggle whether to show menu path at the top", "Swaps to the next Activity", "Show Activity data in a simplified format"};
 
@@ -88,6 +90,8 @@ public class main {
                         path.add("View Based On Type");
                         break;
                     case 2:
+                        viewMenu = false;
+                        viewAll = true;
                         path.add("View All");
                         break;
                     case 0:
@@ -102,36 +106,23 @@ public class main {
                 switch(printMenu(viewTypesMenuOptions, viewTypesMenuOptionsDesc, settings)) {
                     case 1: //date
                         Collections.sort(activities);
-                        printActivitiesNextLoop = ascOrDesc(activities);
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                         break;
                     case 2: //duration
-                        Collections.sort(activities, (a1, a2) -> {
-                            return (int)(a1.getDuration() - a2.getDuration()); //casts to int cuz it needs to be an int :D
-                            }
-                        );
-                        printActivitiesNextLoop = ascOrDesc(activities);
+                        Collections.sort(activities, new ActivityDurationComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                         break;
                     case 3: //distance
-                        Collections.sort(activities, (a1, a2) -> {
-                                    return (int)(a1.getDistance() - a2.getDistance()); //casts to int cuz it needs to be an int :D
-                                }
-                        );
-                        printActivitiesNextLoop = ascOrDesc(activities);
+                        Collections.sort(activities, new ActivityDistanceComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                         break;
                     case 4: //heart rate
-                        Collections.sort(activities, (a1, a2) -> {
-                                    return (int)(a1.getAverageHeartRate() - a2.getAverageHeartRate()); //casts to int cuz it needs to be an int :D
-                                }
-                        );
-                        printActivitiesNextLoop = ascOrDesc(activities);
+                        Collections.sort(activities, new ActivityHeartRateComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                         break;
-                    case 5: //heart rate
-                        Collections.sort(activities, (a1, a2) -> {
-                                    return (int)(a1.getCaloriesBurned() - a2.getCaloriesBurned()); //casts to int cuz it needs to be an int :D
-                                }
-                        );
-                        printActivitiesNextLoop = ascOrDesc(activities);
-                        break;
+                    case 5: //calories
+                        Collections.sort(activities, new ActivityCaloriesComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                     case 6:
                         settings.swapSortType();
                         break;
@@ -141,6 +132,38 @@ public class main {
                         path.remove("View Based On Type");
                         break;
                 }
+            }
+            else if (viewAll) {
+                System.out.println("Sorting " + settings.sortType + " Activities.");
+                switch(printMenu(viewAllMenuOptions, viewAllMenuOptionsDesc, settings)) {
+                    case 1: //date
+                        Collections.sort(activities);
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                        break;
+                    case 2: //duration
+                        Collections.sort(activities, new ActivityDurationComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                        break;
+                    case 3: //distance
+                        Collections.sort(activities, new ActivityDistanceComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                        break;
+                    case 4: //heart rate
+                        Collections.sort(activities, new ActivityHeartRateComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                        break;
+                    case 5: //calories
+                        Collections.sort(activities, new ActivityCaloriesComparator());
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                        break;
+                    case 0:
+                        viewAll = false;
+                        viewMenu = true;
+                        path.remove("View All");
+                        break;
+                }
+                if(printActivitiesNextLoop)
+                    printType = false;
             }
             else if (settingsMenu) {
                 System.out.println("Sorting " + settings.sortType + " Activities.");
@@ -264,10 +287,10 @@ public class main {
     }
 
     public static String getComplexView(Activity activity){
-        return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "km at " + activity.getKPH() + "km/h.\nLasted " + activity.getDuration() + " minutes.\nThe average heart rate was " + activity.getAverageHeartRate() + " bpm.\n" + activity.getCaloriesBurned() + " calories were burned.\nActivity on the " + activity.getDateString() + ".\n=====";
+        return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "km at " + Math.round(activity.getKPH()) + "km/h.\nLasted " + activity.getDuration() + " minutes.\nThe average heart rate was " + activity.getAverageHeartRate() + " bpm.\n" + activity.getCaloriesBurned() + " calories were burned.\nActivity on the " + activity.getDateString() + ".\n=====";
     }
     public static String getSimpleView(Activity activity){
-        return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "\nKm/H: " + activity.getKPH() + "\nDuration: " + activity.getDuration() + " minutes.\nAverage heart rate: " + activity.getAverageHeartRate() + " bpm.\nCalories burned: " + activity.getCaloriesBurned() + ".\n" + activity.getDateString() + ".\n=====";
+        return getClassName(activity) + "(" + activity.getIntensityStatus() + "):\nDistance: " + activity.getDistance() + "\nKm/H: " + Math.round(activity.getKPH()) + "\nDuration: " + activity.getDuration() + " minutes.\nAverage heart rate: " + activity.getAverageHeartRate() + " bpm.\nCalories burned: " + activity.getCaloriesBurned() + ".\n" + activity.getDateString() + ".\n=====";
     }
 
     public static String getClassName(Activity activity){
@@ -277,8 +300,14 @@ public class main {
         return className;
     }
 
-    public static boolean ascOrDesc(ArrayList<Activity> activities){
-        switch (intInput("[1] Ascending\n[2] Descending\n")){
+    public static boolean ascOrDesc(ArrayList<Activity> activities, Settings settings){
+        String askString;
+        if(settings.showDescriptions) {
+            askString = "[1] Ascending (Smallest at the top.)\n[2] Descending (Largest at the top.)\n";
+        } else {
+            askString = "[1] Ascending\n[2] Descending\n";
+        }
+        switch (intInput(askString)){
             case 1:
                 return true; // returns whether or not the list should be printed
             case 2:
@@ -295,6 +324,8 @@ public class main {
 
         ArrayList<Activity> allActivities = new ArrayList<Activity>();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        int dupeCount = 0;
 
         try (Scanner sc = new Scanner(new File(fileName)))
         {
@@ -319,13 +350,24 @@ public class main {
                 double distance = Double.parseDouble(tokens[3]);
                 double avgHeartRate = Double.parseDouble(tokens[4]);
 
-
+                Activity placeHolderActivity = new Running();
                 if(type.equals("Running"))
-                    allActivities.add(new Running(date, duration, distance, avgHeartRate));
+                    placeHolderActivity = new Running(date, duration, distance, avgHeartRate);
                 else if(type.equals("Swimming"))
-                    allActivities.add(new Swimming(date, duration, distance, avgHeartRate));
+                    placeHolderActivity = new Swimming(date, duration, distance, avgHeartRate);
                 else if(type.equals("Cycling"))
-                    allActivities.add(new Cycling(date, duration, distance, avgHeartRate));
+                    placeHolderActivity = new Cycling(date, duration, distance, avgHeartRate);
+
+                boolean isDuplicate = false;
+                for(Activity activity : allActivities){
+                    if(activity.equals(placeHolderActivity)){
+                        isDuplicate = true;
+                        dupeCount++;
+                    }
+                }
+
+                if(!isDuplicate)
+                    allActivities.add(placeHolderActivity);
             }
 
         } catch (FileNotFoundException exception)
@@ -333,7 +375,10 @@ public class main {
             System.out.println("FileNotFoundException caught. The file " +fileName+ " may not exist." + exception);
         }
 
-
+        if(dupeCount == 1)
+            System.out.println("A duplicate was found, they have not been loaded...");
+        else
+            System.out.println(dupeCount + " duplicates were found, they have not been loaded...");
 
         return allActivities;
     }

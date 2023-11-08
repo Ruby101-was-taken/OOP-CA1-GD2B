@@ -11,5 +11,8 @@ public class Running extends Activity{
         super.calculateIntensityValue(kphMileStones, intensityValues);
         super.getCaloriesBurned();
     }
+    public Running() {
+        // :)
+    }
 
 }

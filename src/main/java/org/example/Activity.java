@@ -22,6 +22,10 @@ abstract class Activity implements Comparable<Activity> {
         this.averageHeartRate = averageHeartRate;
     }
 
+    public Activity(){
+
+    }
+
     public Date getDate() {
         return date;
     }
@@ -50,7 +54,7 @@ abstract class Activity implements Comparable<Activity> {
         return averageHeartRate;
     }
 
-    public void setAverageHeartRate(double averageHeartRate) {
+    public void setAverageHeartRate() {
         this.averageHeartRate = averageHeartRate;
     }
 
@@ -85,10 +89,18 @@ abstract class Activity implements Comparable<Activity> {
         return this.date.compareTo(o.getDate());
     }
 
-    public boolean equals(Activity o) {
-        return this.duration == o.getDuration() && this.date == o.getDate() && this.averageHeartRate == o.getAverageHeartRate() && this.distance == o.getDistance();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Activity activity = (Activity) o;
+        return Double.compare(getDuration(), activity.getDuration()) == 0 && Double.compare(getDistance(), activity.getDistance()) == 0 && Double.compare(getAverageHeartRate(), activity.getAverageHeartRate()) == 0 && Objects.equals(getDate(), activity.getDate());
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDate(), getDuration(), getDistance(), getAverageHeartRate());
+    }
 
     public void calculateIntensityValue(double[] kphMileStones, double[] intensityValues){// 0    1     2   3    4
         String status = this.statuses[0];
