@@ -2,7 +2,7 @@ package org.example;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.ParseException;
+import java.text.*;
 import java.text.SimpleDateFormat; // date related code referenced from https://www.edureka.co/blog/date-format-in-java/ on the 1st of the 11th 2023 at 5:53pm
 import java.util.*;
 import java.io.IOException;
@@ -35,8 +35,8 @@ public class main {
         String[] mainMenuOptions = {"View Activity", "Quick View", "Change File", "Settings"};
         String[] mainMenuOptionsDesc = {"View your saved Activity history and related details", "View all Activities now", "Switch which file you're using", "Change how the program functions"};
 
-        String[] viewMenuOptions = {"View Based on Type", "View All", "View Based on Date", "Custom View"};
-        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities", "View Activities from specific dates", "Customise your viewing experience"};
+        String[] viewMenuOptions = {"View Based on Type", "View All", "View Based on Date", "Custom View", "Averages View"};
+        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities", "View Activities from specific dates", "Customise your viewing experience", "View averages of certain stats"};
 
         String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Sort Based on Intensity", "Change Activity"};
         String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Sorts Activities based on how intense it was", "Swaps to the next Activity"};
@@ -54,7 +54,7 @@ public class main {
 
         Settings settings = new Settings();
 
-        boolean printActivitiesNextLoop = false, printType = true;
+        boolean printActivitiesNextLoop = false, printType = true, printStats = false;
 
         Activity singleActivityToPrint = null;
         ArrayList<Activity> customView = null;
@@ -74,6 +74,11 @@ public class main {
                     printActivity(activities, settings);
                 printActivitiesNextLoop = false;
                 printType = true;
+            }
+
+            if(printStats){
+                printStats = false;
+                System.out.println("All:\nAverage Calories Burned: " + getAvgCalories(activities) + " Average Distance: " + getAvgDistance(activities) + "\nRunning:\nAverage Calories Burned: " + getAvgCalories(activities, "Running") + " Average Distance: " + getAvgDistance(activities, "Running") + "\nSwimming:\nAverage Calories Burned: " + getAvgCalories(activities, "Swimming") + " Average Distance: " + getAvgDistance(activities, "Swimming") + "\nCycling:\nAverage Calories Burned: " + getAvgCalories(activities, "Cycling") + " Average Distance: " + getAvgDistance(activities, "Cycling"));
             }
 
             if(mainMenu){
@@ -126,6 +131,9 @@ public class main {
                         viewMenu = false;
                         viewCustom = true;
                         path.add("Custom View");
+                        break;
+                    case 5:
+                        printStats = true;
                         break;
                     case 0:
                         mainMenu = true;
@@ -569,5 +577,40 @@ public class main {
         }
 
         return allActivities;
+    }
+
+    public static double getAvgDistance(ArrayList<Activity> activities){
+        DecimalFormat df = new DecimalFormat("#.##");
+        double total = 0;
+        for(Activity activity : activities){
+            total+= activity.getDistance();
+        }
+        return Double.parseDouble(df.format(total/activities.size()));
+    }
+    public static double getAvgDistance(ArrayList<Activity> activities, String type){
+        DecimalFormat df = new DecimalFormat("#.##");
+        double total = 0;
+        for(Activity activity : activities){
+            if(getClassName(activity).equals(type))
+                total+= activity.getDistance();
+        }
+        return Double.parseDouble(df.format(total/activities.size()));
+    }
+    public static double getAvgCalories(ArrayList<Activity> activities){
+        DecimalFormat df = new DecimalFormat("#.##");
+        double total = 0;
+        for(Activity activity : activities){
+            total+= activity.getCaloriesBurned();
+        }
+        return Double.parseDouble(df.format(total/activities.size()));
+    }
+    public static double getAvgCalories(ArrayList<Activity> activities, String type){
+        DecimalFormat df = new DecimalFormat("#.##");
+        double total = 0;
+        for(Activity activity : activities){
+            if(getClassName(activity).equals(type))
+                total+= activity.getCaloriesBurned();
+        }
+        return Double.parseDouble(df.format(total/activities.size()));
     }
 }
