@@ -3,15 +3,24 @@ package org.example;
 import java.util.*;
 
 abstract class Activity implements Comparable<Activity> {
-    private String intensityStatus = "Very Light";
     private Date date;
     private double duration, distance, averageHeartRate;
 
     private double intensity = 0, caloriesBurned = 0;
 
-    private String[] statuses = {"Extremely Light", "Very Light", "Light", "Moderate", "Vigorous", "Very Vigorous"};
+    enum Statuses{
+        Invalid,
+        ExtremelyLight,
+        VeryLight,
+        Light,
+        Moderate,
+        Vigorous,
+        VeryVigorous
+    }
+    private Statuses intensityStatus = Statuses.VeryLight;
+    private Statuses [] statuses = {Statuses.ExtremelyLight, Statuses.VeryLight, Statuses.Light, Statuses.Moderate, Statuses.Vigorous, Statuses.VeryVigorous};
 
-    public String[] getStatuses() {
+    public Statuses[] getStatuses() {
         return statuses;
     }
 
@@ -58,7 +67,7 @@ abstract class Activity implements Comparable<Activity> {
         this.averageHeartRate = averageHeartRate;
     }
 
-    public String getIntensityStatus() {
+    public Statuses getIntensityStatus() {
         return intensityStatus;
     }
 
@@ -77,7 +86,7 @@ abstract class Activity implements Comparable<Activity> {
         return date.getDate() + "/" + (date.getMonth()+1) + "/" + (date.getYear()+1900);
     }
 
-    public void setIntensityStatus(String intensityStatus) {
+    public void setIntensityStatus(Statuses intensityStatus) {
         this.intensityStatus = intensityStatus;
     }
 
@@ -103,7 +112,7 @@ abstract class Activity implements Comparable<Activity> {
     }
 
     public void calculateIntensityValue(double[] kphMileStones, double[] intensityValues){// 0    1     2   3    4
-        String status = this.statuses[0];
+        Statuses status = this.statuses[0];
         double KPH = getKPH();
         if(KPH >= kphMileStones[4]) {
             status = getStatuses()[5];
@@ -126,7 +135,7 @@ abstract class Activity implements Comparable<Activity> {
             setIntensity(intensityValues[0]);
         }
         else if(KPH <= 0)
-            status = "Invalid";
+            status = Statuses.Invalid;
 
         setIntensityStatus(status);
     }

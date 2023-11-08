@@ -7,7 +7,7 @@ import java.util.Date;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SwimmingTest {
-    private String[] statuses = {"Extremely Light", "Very Light", "Light", "Moderate", "Vigorous", "Very Vigorous"};
+    private Activity.Statuses[] statuses = {Activity.Statuses.ExtremelyLight, Activity.Statuses.VeryLight, Activity.Statuses.Light, Activity.Statuses.Moderate, Activity.Statuses.Vigorous, Activity.Statuses.VeryVigorous, Activity.Statuses.Invalid};
     private double[] intensityValues = {5, 6.3, 7.6, 8.9, 10.2}, kphMileStones = {0.5, 1.25, 2, 2.75, 3.5};
     // test kmpintensity
 
@@ -65,7 +65,7 @@ class SwimmingTest {
         Swimming s = new Swimming(new Date(), time, distance, 100);
         System.out.println("Test 7 - Distance: " + distance + ", Duration:" + time + ".");
         s.calculateIntensityValue(kphMileStones, intensityValues);
-        assertEquals("Invalid", s.getIntensityStatus());
+        assertEquals(statuses[6], s.getIntensityStatus());
     }
     @Test
     void noSwimKPH(){
@@ -73,6 +73,6 @@ class SwimmingTest {
         Swimming s = new Swimming(new Date(), time, distance, 100);
         System.out.println("Test 8 - Distance: " + distance + ", Duration:" + time + ".");
         s.calculateIntensityValue(kphMileStones, intensityValues);
-        assertEquals("Invalid", s.getIntensityStatus());
+        assertEquals(statuses[6], s.getIntensityStatus());
     }
 }

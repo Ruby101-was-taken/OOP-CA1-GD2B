@@ -15,4 +15,8 @@ public class Running extends Activity{
         // :)
     }
 
+    public Running(Date date){
+        super(date, 0, 0, 0);
+    }
+
 }

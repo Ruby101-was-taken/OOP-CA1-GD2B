@@ -22,15 +22,17 @@ public class main {
 
         boolean runProgram = true;
 
-        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false, viewAll = false;
+        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false, viewAll = false, viewDate = false;
         String[] mainMenuOptions = {"View Activity", "Quick View", "Change File", "Settings"};
         String[] mainMenuOptionsDesc = {"View your saved Activity history and related details", "View all Activities now", "Switch which file you're using", "Change how the program functions"};
-        String[] viewMenuOptions = {"View Based on Type", "View All"};
-        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities"};
+        String[] viewMenuOptions = {"View Based on Type", "View All", "View Based on Date"};
+        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities", "View Activities from specific dates"};
         String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Change Activity"};
         String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Swaps to the next Activity"};
         String[] viewAllMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned"};
         String[] viewAllMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity"};
+
+
         String[] settingsMenuOptions = {"Toggle Descriptions", "Toggle Settings Path", "Change Activity", "Toggle Simplified Activity View"};
         String[] settingsMenuOptionsDesc = {"Toggle whether to show these messages", "Toggle whether to show menu path at the top", "Swaps to the next Activity", "Show Activity data in a simplified format"};
 
@@ -40,6 +42,8 @@ public class main {
         Settings settings = new Settings();
 
         boolean printActivitiesNextLoop = false, printType = true;
+
+        Activity singleActivityToPrint = null;
 
         while (runProgram) {
             if(path.size() > 0) // don't print title if there is no menu open cuz it crashes cuz the path doesn't exist etc etc blah blah blah
@@ -93,6 +97,11 @@ public class main {
                         viewMenu = false;
                         viewAll = true;
                         path.add("View All");
+                        break;
+                    case 3:
+                        viewMenu = false;
+                        viewDate = true;
+                        path.add("View Based on Date");
                         break;
                     case 0:
                         mainMenu = true;
@@ -165,6 +174,54 @@ public class main {
                 if(printActivitiesNextLoop)
                     printType = false;
             }
+            else if(viewDate) { //i think I hate this code
+                System.out.println(""); //just need a line break here :3
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                boolean canContinue = true;
+                int date = -1, month = 0, year;
+                if (singleActivityToPrint != null){
+                    System.out.println("Note: Only one Activity can be shown from a day.\n====="); //this is something I would fix if I had more time, but I just included it cuz I wanted to use binary search
+                    if (settings.simpleActivity)
+                        System.out.println(getSimpleView(singleActivityToPrint));
+                    else
+                        System.out.println(getComplexView(singleActivityToPrint));
+                }
+                singleActivityToPrint = null;
+
+                Comparator<Activity> activityDateComparator =
+                        (a1, a2) -> a1.getDate().compareTo(a2.getDate());
+                while(date < 0 || date > 31){
+                    date = intInput("[DD/mm/yyyy]Enter the date (or enter 0 to go back)");
+                    if(date < 0 || date > 31)
+                        System.out.println("Please enter a valid date.");
+                }
+                if (date!=0){
+                    while(month < 1 || month > 12) {
+                        month = intInput("[" + date + "/MM/yyyy]Enter the month (As a number)");
+                        if(month < 1 || month > 12)
+                            System.out.println("Please enter a valid month.");
+                    }
+                    year = intInput("[" + date + "/" + month + "/YYYY]Enter the year");
+                    Date fullDate = null;
+                    try {
+                        fullDate = dateFormat.parse(createDateString(date, month, year));
+                        Activity key = new Running(fullDate);
+                        Collections.sort(activities);
+                        int index = Collections.binarySearch(activities, key, activityDateComparator);
+                        if(index >= 0){
+                           singleActivityToPrint = activities.get(index);
+                        }
+                    }
+                    catch (ParseException e){
+                        System.out.println("Something went wrong, check you inputted the date correctly and try again...");
+                    }
+                }
+                else{
+                    viewDate = false;
+                    viewMenu = true;
+                    path.remove("View Based on Date");
+                }
+            }
             else if (settingsMenu) {
                 System.out.println("Sorting " + settings.sortType + " Activities.");
                 switch (printMenu(settingsMenuOptions, settingsMenuOptionsDesc, settings)) {
@@ -201,6 +258,17 @@ public class main {
         }
 
         System.out.println("Activity Tracker Closed....");
+    }
+
+    public static String createDateString(int date, int month, int year){
+        String returnString = "";
+        if(date < 10)
+            returnString += "0";
+        returnString += date + "/";
+        if(month<10)
+            returnString += "0";
+        returnString += month + "/" + year;
+        return  returnString;
     }
 
     public static ArrayList<Activity> selectFile() {
@@ -326,6 +394,7 @@ public class main {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
         int dupeCount = 0;
+
 
         try (Scanner sc = new Scanner(new File(fileName)))
         {
