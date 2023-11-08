@@ -7,6 +7,15 @@ import java.text.SimpleDateFormat; // date related code referenced from https://
 import java.util.*;
 import java.io.IOException;
 
+
+/*
+
+GITHUB LINK
+
+https://github.com/Ruby101-was-taken/OOP-CA1-GD2B
+
+ */
+
 public class main {
 
 
@@ -22,16 +31,20 @@ public class main {
 
         boolean runProgram = true;
 
-        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false, viewAll = false, viewDate = false;
+        boolean mainMenu = true, viewMenu = false, settingsMenu = false, viewTypes = false, viewAll = false, viewDate = false, viewCustom = false;
         String[] mainMenuOptions = {"View Activity", "Quick View", "Change File", "Settings"};
         String[] mainMenuOptionsDesc = {"View your saved Activity history and related details", "View all Activities now", "Switch which file you're using", "Change how the program functions"};
-        String[] viewMenuOptions = {"View Based on Type", "View All", "View Based on Date"};
-        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities", "View Activities from specific dates"};
-        String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Change Activity"};
-        String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Swaps to the next Activity"};
-        String[] viewAllMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned"};
-        String[] viewAllMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity"};
 
+        String[] viewMenuOptions = {"View Based on Type", "View All", "View Based on Date", "Custom View"};
+        String[] viewMenuOptionsDesc = {"View specific type of Activity", "View all Activities", "View Activities from specific dates", "Customise your viewing experience"};
+
+        String[] viewTypesMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Sort Based on Intensity", "Change Activity"};
+        String[] viewTypesMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Sorts Activities based on how intense it was", "Swaps to the next Activity"};
+        String[] viewAllMenuOptions = {"Sort Based on Date", "Sort Based on Duration", "Sort Based on Distance", "Sort Based on Average Heart Rate", "Sort Based on Calories Burned", "Sort Based on Intensity"};
+        String[] viewAllMenuOptionsDesc = {"Sorts Activities based on date", "Sorts Activities based on duration of the Activity", "Sorts Activities based on the distance travelled", "Sorts Activities based on your average heart rate during the Activity", "Sorts Activities based on calories burned during the Activity", "Sorts Activities based on how intense it was"};
+
+        String[] viewCustomOptions = {"Set Sort", "Set Duration Minimum", "Set Distance Minimum", "Set Average Heart Rate Minimum", "Set Calories Minimum", "Set Activities", "View List"};
+        String[] viewCustomOptionsDesc = {"Set how the list sorts", "Set a minimum for duration", "Set a minimum for distance", "Set a minimum for average heart rate", "Set a minimum for calories", "Set what Activities show up", "View the list based on your settings"};
 
         String[] settingsMenuOptions = {"Toggle Descriptions", "Toggle Settings Path", "Change Activity", "Toggle Simplified Activity View"};
         String[] settingsMenuOptionsDesc = {"Toggle whether to show these messages", "Toggle whether to show menu path at the top", "Swaps to the next Activity", "Show Activity data in a simplified format"};
@@ -44,6 +57,9 @@ public class main {
         boolean printActivitiesNextLoop = false, printType = true;
 
         Activity singleActivityToPrint = null;
+        ArrayList<Activity> customView = null;
+
+        CustomViewSettings cvSettings = new CustomViewSettings();
 
         while (runProgram) {
             if(path.size() > 0) // don't print title if there is no menu open cuz it crashes cuz the path doesn't exist etc etc blah blah blah
@@ -51,6 +67,9 @@ public class main {
             if (printActivitiesNextLoop){
                 if(printType)
                     printActivity(activities, settings.sortType, settings);
+                else if(customView!=null) {
+                    printActivity(customView, settings);
+                }
                 else
                     printActivity(activities, settings);
                 printActivitiesNextLoop = false;
@@ -103,6 +122,11 @@ public class main {
                         viewDate = true;
                         path.add("View Based on Date");
                         break;
+                    case 4:
+                        viewMenu = false;
+                        viewCustom = true;
+                        path.add("Custom View");
+                        break;
                     case 0:
                         mainMenu = true;
                         viewMenu = false;
@@ -132,7 +156,10 @@ public class main {
                     case 5: //calories
                         Collections.sort(activities, new ActivityCaloriesComparator());
                         printActivitiesNextLoop = ascOrDesc(activities, settings);
-                    case 6:
+                    case 6: //intensity
+                        Collections.sort(activities, (a1, a2) -> a1.getIntensityStatus().compareTo(a2.getIntensityStatus()));
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
+                    case 7:
                         settings.swapSortType();
                         break;
                     case 0:
@@ -164,6 +191,9 @@ public class main {
                     case 5: //calories
                         Collections.sort(activities, new ActivityCaloriesComparator());
                         printActivitiesNextLoop = ascOrDesc(activities, settings);
+                    case 6: //intensity
+                        Collections.sort(activities, (a1, a2) -> a1.getIntensityStatus().compareTo(a2.getIntensityStatus()));
+                        printActivitiesNextLoop = ascOrDesc(activities, settings);
                         break;
                     case 0:
                         viewAll = false;
@@ -173,6 +203,93 @@ public class main {
                 }
                 if(printActivitiesNextLoop)
                     printType = false;
+            }
+            else if(viewCustom) {
+
+                String[] sortByMenu = {"Sort By Date", "Sort By Calories", "Sort By Distance", "Sort By Duration", "Sort By Heart Rate"};
+                String[] sortByMenuDesc = {"Sort the list by date", "Sort the list by calories", "Sort the list by distance", "Sort the list by duration", "Sort the list by heart rate"};
+                System.out.println(cvSettings);
+                switch (printMenu(viewCustomOptions, viewCustomOptionsDesc, settings)){
+                    case 1:
+                        switch (printMenu(sortByMenu, sortByMenuDesc, settings)){
+                            case 1:
+                                cvSettings.sortType = CustomViewSettings.SortType.Date;
+                                break;
+                            case 2:
+                                cvSettings.sortType = CustomViewSettings.SortType.Calories;
+                                break;
+                            case 3:
+                                cvSettings.sortType = CustomViewSettings.SortType.Distance;
+                                break;
+                            case 4:
+                                cvSettings.sortType = CustomViewSettings.SortType.Duration;
+                                break;
+                            case 5:
+                                cvSettings.sortType = CustomViewSettings.SortType.HeartRate;
+                                break;
+                        }
+                        break;
+                    case 2:
+                        cvSettings.minimumDuration = intInput("What should the minimum duration be?");
+                        break;
+                    case 3:
+                        cvSettings.minimumDistance = intInput("What should the minimum distance be?");
+                        break;
+                    case 4:
+                        cvSettings.minimumHearRate = intInput("What should the minimum average heart rate be?");
+                        break;
+                    case 5:
+                        cvSettings.minimumCalories = intInput("What should the minimum calories be?");
+                        break;
+                    case 6:
+                        switch (intInput("Toggle Activties to Show. Type the number of the Activity to toggle it.\n[1] Running\n[2] Swimming\n[3] Cycling\n")){
+                            case 1:
+                                cvSettings.toggle("Running");
+                                break;
+                            case 2:
+                                cvSettings.toggle("Swimming");
+                                break;
+                            case 3:
+                                cvSettings.toggle("Cycling");
+                                break;
+                        }
+                        break;
+                    case 7:
+                        customView = new ArrayList<Activity>();
+                        for(Activity activity : activities){
+                            if(cvSettings.activities.indexOf(getClassName(activity)) != -1){
+                                if(activity.getDuration() >= cvSettings.minimumDuration && activity.getDistance() >= cvSettings.minimumDistance && activity.getAverageHeartRate() >= cvSettings.minimumHearRate && activity.getCaloriesBurned() >= cvSettings.minimumCalories){
+                                    customView.add(activity);
+                                }
+                            }
+                        }
+                        switch (cvSettings.sortType){
+                            case Date:
+                                Collections.sort(customView);
+                                break;
+                            case Calories:
+                                Collections.sort(customView, new ActivityCaloriesComparator());
+                                break;
+                            case Distance:
+                                Collections.sort(customView, new ActivityDistanceComparator());
+                                break;
+                            case Duration:
+                                Collections.sort(customView, new ActivityDurationComparator());
+                                break;
+                            case HeartRate:
+                                Collections.sort(customView, new ActivityHeartRateComparator());
+                                break;
+                        }
+
+                        ascOrDesc(customView, settings);
+                        printActivitiesNextLoop = true;
+                        printType = false;
+                        break;
+                    case 0:
+                        viewCustom = false;
+                        viewMenu = true;
+                        path.remove("Custom View");
+                }
             }
             else if(viewDate) { //i think I hate this code
                 System.out.println(""); //just need a line break here :3
@@ -444,10 +561,12 @@ public class main {
             System.out.println("FileNotFoundException caught. The file " +fileName+ " may not exist." + exception);
         }
 
-        if(dupeCount == 1)
-            System.out.println("A duplicate was found, they have not been loaded...");
-        else
-            System.out.println(dupeCount + " duplicates were found, they have not been loaded...");
+        if(dupeCount > 0) {
+            if (dupeCount == 1)
+                System.out.println("A duplicate was found, they have not been loaded...");
+            else
+                System.out.println(dupeCount + " duplicates were found, they have not been loaded...");
+        }
 
         return allActivities;
     }
