@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -11,4 +12,5 @@ public class Cycling extends Activity{
         super.calculateIntensityValue(kphMileStones, intensityValues);
         super.getCaloriesBurned();
     }
+
 }
